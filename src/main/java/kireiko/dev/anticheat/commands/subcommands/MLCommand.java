@@ -1,5 +1,9 @@
 package kireiko.dev.anticheat.commands.subcommands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import kireiko.dev.anticheat.MX;
 import kireiko.dev.anticheat.commands.MXSubCommand;
 import kireiko.dev.millennium.ml.ClientML;
@@ -10,11 +14,6 @@ import kireiko.dev.millennium.ml.logic.RNNModelML.InputMode;
 import kireiko.dev.millennium.ml.logic.RNNModelML.PoolingMode;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public final class MLCommand extends MXSubCommand {
 
@@ -63,12 +62,11 @@ public final class MLCommand extends MXSubCommand {
             return true;
         }
 
-        if (!(modelRaw instanceof RNNModelML)) {
+        if (!(modelRaw instanceof RNNModelML rnn)) {
             sender.sendMessage("§cModel at index " + index + " is not an RNN (v5). This command only supports RNNs.");
             return true;
         }
 
-        RNNModelML rnn = (RNNModelML) modelRaw;
         String param = args[1].toLowerCase();
         String value = args[2];
 

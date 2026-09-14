@@ -1,14 +1,13 @@
 package kireiko.dev.anticheat.api.player;
 
 import com.google.common.collect.Lists;
-import kireiko.dev.anticheat.api.events.RotationEvent;
-import kireiko.dev.anticheat.utils.GraphUtil;
-import kireiko.dev.millennium.math.Statistics;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import kireiko.dev.anticheat.api.events.RotationEvent;
+import kireiko.dev.anticheat.utils.GraphUtil;
+import kireiko.dev.millennium.math.Statistics;
 
 public final class CinematicComponent {
     private final List<Double
@@ -55,10 +54,10 @@ public final class CinematicComponent {
             }
             GraphUtil.GraphResult resultsYaw = GraphUtil.getGraph(this.yawSamples);
             GraphUtil.GraphResult resultsPitch = GraphUtil.getGraph(this.pitchSamples);
-            int negativesYaw = resultsYaw.getNegatives();
-            int negativesPitch = resultsPitch.getNegatives();
-            int positivesYaw = resultsYaw.getPositives();
-            int positivesPitch = resultsPitch.getPositives();
+            int negativesYaw = resultsYaw.negatives();
+            int negativesPitch = resultsPitch.negatives();
+            int positivesYaw = resultsYaw.positives();
+            int positivesPitch = resultsPitch.positives();
             if (positivesYaw > negativesYaw || positivesPitch > negativesPitch)
                 this.lastSmooth = now;
             this.yawSamples.clear();

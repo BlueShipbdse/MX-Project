@@ -1,17 +1,15 @@
 package kireiko.dev.anticheat.checks.aim;
 
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import kireiko.dev.anticheat.api.PacketCheckHandler;
 import kireiko.dev.anticheat.api.data.ConfigLabel;
+import kireiko.dev.anticheat.api.events.AttackEntityEvent;
 import kireiko.dev.anticheat.api.events.RotationEvent;
-import kireiko.dev.anticheat.api.events.UseEntityEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
-import kireiko.dev.anticheat.api.player.SensitivityProcessor;
 import kireiko.dev.anticheat.managers.CheckManager;
 import kireiko.dev.millennium.math.Statistics;
 import kireiko.dev.millennium.vectors.Vec2f;
-
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class AimAnalysisCheck implements PacketCheckHandler {
     private final List<Float> buffer;
@@ -55,8 +53,7 @@ public final class AimAnalysisCheck implements PacketCheckHandler {
 
     @Override
     public void event(Object o) {
-        if (o instanceof RotationEvent) {
-            RotationEvent event = (RotationEvent) o;
+        if (o instanceof RotationEvent event) {
             if (System.currentTimeMillis() > this.lastAttack + 3500) return;
             Vec2f delta = event.getDelta();
             this.rawRotations.add(delta);
@@ -65,8 +62,7 @@ public final class AimAnalysisCheck implements PacketCheckHandler {
                 this.limitedRotations.add(delta);
                 if (this.limitedRotations.size() >= 100) this.checkLimited();
             }
-        } else if (o instanceof UseEntityEvent) {
-            UseEntityEvent event = (UseEntityEvent) o;
+        } else if (o instanceof AttackEntityEvent event) {
             if (event.isAttack()) {
                 this.lastAttack = System.currentTimeMillis();
             }

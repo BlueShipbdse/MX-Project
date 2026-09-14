@@ -1,5 +1,11 @@
 package kireiko.dev.millennium.ml.logic;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import kireiko.dev.millennium.ml.data.ObjectML;
 import kireiko.dev.millennium.ml.data.ResultML;
 import kireiko.dev.millennium.ml.logic.rnn.RNNConfig;
@@ -14,13 +20,6 @@ import kireiko.dev.millennium.ml.logic.rnn.optim.AdamW;
 import kireiko.dev.millennium.ml.logic.rnn.pooling.*;
 import kireiko.dev.millennium.ml.logic.rnn.util.ModelIO;
 import kireiko.dev.millennium.vectors.Pair;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public final class RNNModelML implements Millennium {
 
@@ -269,7 +268,7 @@ public final class RNNModelML implements Millennium {
             pg.dAttentionW = dAttnW;
             pg.dAttentionB = 0.0;
 
-            double[][] dH = activePooling.backward(fc.hTime, fc.seq.mask, dPooled, fc.poolCache, pg);
+            double[][] dH = activePooling.backward(fc.hTime, fc.seq.mask(), dPooled, fc.poolCache, pg);
             attnBGrad += pg.dAttentionB;
 
             double[][] dX = encoder.backward(fc.encCache, dH, encGradAcc, cfg.gradientClip);
@@ -296,10 +295,10 @@ public final class RNNModelML implements Millennium {
         if (seq == null || seq.length() < 2) return null;
 
         StackedBiLSTM.Cache encCache = new StackedBiLSTM.Cache();
-        double[][] hTime = encoder.forward(seq.x, training, cfg.dropoutRate, cfg.recurrentDropoutRate, rng, encCache);
+        double[][] hTime = encoder.forward(seq.x(), training, cfg.dropoutRate, cfg.recurrentDropoutRate, rng, encCache);
 
         PoolingCache pc = new PoolingCache();
-        double[] pooled = activePooling.forward(hTime, seq.mask, pc);
+        double[] pooled = activePooling.forward(hTime, seq.mask(), pc);
 
         BinaryHead.Cache hc = new BinaryHead.Cache();
         double prob = head.forward(pooled, hc);
@@ -318,8 +317,8 @@ public final class RNNModelML implements Millennium {
         SequenceData seq = activePre.prepare(raw);
         if (seq == null || seq.length() < 2) return 0.5;
 
-        double[][] hTime = encoder.forward(seq.x, false, 0.0, 0.0, rng, null);
-        double[] pooled = activePooling.forward(hTime, seq.mask, null);
+        double[][] hTime = encoder.forward(seq.x(), false, 0.0, 0.0, rng, null);
+        double[] pooled = activePooling.forward(hTime, seq.mask(), null);
         return head.forward(pooled, null);
     }
 
@@ -594,13 +593,7 @@ public final class RNNModelML implements Millennium {
         return p;
     }
 
-    private static final class Sample {
-        final double[][] vecs;
-        final double label;
-        Sample(double[][] vecs, double label) {
-            this.vecs = vecs;
-            this.label = label;
-        }
+    private record Sample(double[][] vecs, double label) {
     }
 
     private static final class ForwardCache {
@@ -639,48 +632,51 @@ public final class RNNModelML implements Millennium {
         }
     }
 
-    private static final class HybridPre implements SequencePreprocessor {
-        private final SequencePreprocessor raw;
-        private final SequencePreprocessor stat;
-        HybridPre(SequencePreprocessor raw, SequencePreprocessor stat) {
-            this.raw = raw;
-            this.stat = stat;
-        }
+    private record HybridPre(SequencePreprocessor raw, SequencePreprocessor stat) implements SequencePreprocessor {
         @Override
-        public SequenceData prepare(double[][] rawVecs) {
-            if (rawVecs == null) return null;
-            if (rawVecs.length >= 40) return stat.prepare(rawVecs);
-            return raw.prepare(rawVecs);
+            public SequenceData prepare(double[][] rawVecs) {
+                if (rawVecs == null) return null;
+                if (rawVecs.length >= 40) return stat.prepare(rawVecs);
+                return raw.prepare(rawVecs);
+            }
         }
-    }
 
-    private static final class LastHiddenPooling implements PoolingStrategy {
-        private final int outSize;
-        LastHiddenPooling(int outSize) { this.outSize = outSize; }
-        @Override public int outputSize() { return outSize; }
+    private record LastHiddenPooling(int outSize) implements PoolingStrategy {
         @Override
-        public double[] forward(double[][] hTime, double[] mask, PoolingCache cache) {
-            int last = -1;
-            for (int t = hTime.length - 1; t >= 0; t--) {
-                if (mask[t] > 0.5) { last = t; break; }
-            }
-            if (last < 0) last = hTime.length - 1;
-            double[] pooled = new double[outSize];
-            System.arraycopy(hTime[last], 0, pooled, 0, outSize);
-            return pooled;
+        public int outputSize() {
+            return outSize;
         }
+
         @Override
-        public double[][] backward(double[][] hTime, double[] mask, double[] dPooled, PoolingCache cache, PoolingGrad gAcc) {
-            double[][] dH = new double[hTime.length][outSize];
-            int last = -1;
-            for (int t = hTime.length - 1; t >= 0; t--) {
-                if (mask[t] > 0.5) { last = t; break; }
+            public double[] forward(double[][] hTime, double[] mask, PoolingCache cache) {
+                int last = -1;
+                for (int t = hTime.length - 1; t >= 0; t--) {
+                    if (mask[t] > 0.5) {
+                        last = t;
+                        break;
+                    }
+                }
+                if (last < 0) last = hTime.length - 1;
+                double[] pooled = new double[outSize];
+                System.arraycopy(hTime[last], 0, pooled, 0, outSize);
+                return pooled;
             }
-            if (last < 0) last = hTime.length - 1;
-            System.arraycopy(dPooled, 0, dH[last], 0, outSize);
-            return dH;
+
+        @Override
+            public double[][] backward(double[][] hTime, double[] mask, double[] dPooled, PoolingCache cache, PoolingGrad gAcc) {
+                double[][] dH = new double[hTime.length][outSize];
+                int last = -1;
+                for (int t = hTime.length - 1; t >= 0; t--) {
+                    if (mask[t] > 0.5) {
+                        last = t;
+                        break;
+                    }
+                }
+                if (last < 0) last = hTime.length - 1;
+                System.arraycopy(dPooled, 0, dH[last], 0, outSize);
+                return dH;
+            }
         }
-    }
 
     private static final class LayerWeightsSnapshot {
         final double[] Wf, Wi, Wc, Wo;
@@ -854,18 +850,12 @@ public final class RNNModelML implements Millennium {
         zeroBatchGrads();
     }
 
-    private static final class PredictionPair implements Comparable<PredictionPair> {
-        final double prob;
-        final double label;
-        PredictionPair(double prob, double label) {
-            this.prob = prob;
-            this.label = label;
-        }
+    private record PredictionPair(double prob, double label) implements Comparable<PredictionPair> {
         @Override
-        public int compareTo(PredictionPair o) {
-            return Double.compare(o.prob, this.prob);
+            public int compareTo(PredictionPair o) {
+                return Double.compare(o.prob, this.prob);
+            }
         }
-    }
 
     private static final class DatasetMetrics {
         double lossSum;

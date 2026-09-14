@@ -1,6 +1,7 @@
 package kireiko.dev.anticheat.commands;
 
 import com.google.common.collect.ImmutableList;
+import java.util.*;
 import kireiko.dev.anticheat.MX;
 import kireiko.dev.anticheat.commands.subcommands.*;
 import net.md_5.bungee.api.ChatColor;
@@ -15,8 +16,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-
 import static kireiko.dev.anticheat.utils.MessageUtils.wrapColors;
 
 public final class MXCommandHandler implements TabExecutor {
@@ -28,7 +27,6 @@ public final class MXCommandHandler implements TabExecutor {
         this.subCommands.add(new LogCommand());
         this.subCommands.add(new BroadcastCommand());
         this.subCommands.add(new DebugCommand());
-        this.subCommands.add(new FunCommand());
         this.subCommands.add(new InfoCommand());
         this.subCommands.add(new PunishCommand());
         this.subCommands.add(new ReloadCommand());

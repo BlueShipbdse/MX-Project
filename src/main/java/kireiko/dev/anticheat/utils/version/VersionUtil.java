@@ -1,15 +1,15 @@
 package kireiko.dev.anticheat.utils.version;
 
-import lombok.Getter;
-import org.bukkit.Bukkit;
-
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.bukkit.Bukkit;
 
 public final class VersionUtil {
 
     private static final Pattern VERSION_PATTERN = Pattern.compile("MC: ([0-9]+(?:\\.[0-9]+)+)");
-    @Getter
+
     private static final String version = extractVersion(Bukkit.getVersion());
 
     private static String extractVersion(String fullVersion) {
@@ -23,55 +23,71 @@ public final class VersionUtil {
     public static String getBukkitVersion() {
         return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
     }
+    public static ServerVersion getVersion() {
+        return PacketEvents.getAPI().getServerManager().getVersion();
+    }
 
+    @Deprecated
     public static boolean is1_8() {
         return version.startsWith("1.8");
     }
 
+    @Deprecated
     public static boolean is1_8orAbove() {
         return compareVersion("1.8") >= 0;
     }
 
+    @Deprecated
     public static boolean is1_9orAbove() {
         return compareVersion("1.9") >= 0;
     }
 
+    @Deprecated
     public static boolean is1_12orAbove() {
         return compareVersion("1.12") >= 0;
     }
 
+    @Deprecated
     public static boolean is1_13orAbove() {
         return compareVersion("1.13") >= 0;
     }
 
+    @Deprecated
     public static boolean is1_14orAbove() {
         return compareVersion("1.14") >= 0;
     }
 
+    @Deprecated
     public static boolean is1_15orAbove() {
         return compareVersion("1.15") >= 0;
     }
 
+    @Deprecated
     public static boolean is1_16orAbove() {
         return compareVersion("1.16") >= 0;
     }
 
+    @Deprecated
     public static boolean is1_17orAbove() {
         return compareVersion("1.17") >= 0;
     }
 
+    @Deprecated
     public static boolean is1_18orAbove() {
         return compareVersion("1.18") >= 0;
     }
 
+    @Deprecated
     public static boolean is1_19orAbove() {
         return compareVersion("1.19") >= 0;
     }
 
+    @Deprecated
     public static boolean is1_20orAbove() {
         return compareVersion("1.20") >= 0;
     }
 
+    @Deprecated
     public static boolean is1_21orAbove() {
         return compareVersion("1.21") >= 0;
     }

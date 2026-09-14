@@ -1,14 +1,16 @@
 package kireiko.dev.anticheat.api.player;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import kireiko.dev.anticheat.MX;
 import kireiko.dev.anticheat.api.CheckPacketRegister;
 import kireiko.dev.anticheat.api.PacketCheckHandler;
 import kireiko.dev.anticheat.api.events.MXFlagEvent;
 import kireiko.dev.anticheat.managers.CheckManager;
-import kireiko.dev.anticheat.services.AnimatedPunishService;
 import kireiko.dev.anticheat.utils.ConfigCache;
 import kireiko.dev.anticheat.utils.MessageUtils;
-import kireiko.dev.anticheat.utils.protocol.ProtocolLib;
 import kireiko.dev.millennium.math.Statistics;
 import kireiko.dev.millennium.types.EvictingList;
 import kireiko.dev.millennium.vectors.Pair;
@@ -17,8 +19,6 @@ import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-
-import java.util.*;
 
 @Data
 public final class PlayerProfile {
@@ -33,8 +33,7 @@ public final class PlayerProfile {
     private final List<String> logs = new ArrayList<>();
     public boolean transactionSentKeep;
     public boolean transactionBoot = true;
-    public long transactionTime, transactionLastTime, transactionPing;
-    public short transactionId;
+    public long transactionTime, transactionLastTime, transactionPing, transactionId;
     public int airTicks, flagCount, punishAnimation, teleportTicks;
     public boolean sneaking = false, sprinting = false, ground = false;
     private boolean cinematic = false;
@@ -82,11 +81,7 @@ public final class PlayerProfile {
                     + "]");
         }
         if (this.vl >= vlLimit) {
-            if (ConfigCache.PUNISH_EFFECT) {
-                AnimatedPunishService.punish(this, new Pair<>(check, info));
-            } else {
-                forcePunish(check, info);
-            }
+            forcePunish(check, info);
         } else if (this.vl >= vlLimit / 1.8) {
             if (flagCount > 2 && !ConfigCache.SUSPECTED.isEmpty()) {
                 MessageUtils.sendMessagesToPlayersNative(
@@ -147,16 +142,7 @@ public final class PlayerProfile {
     }
 
     public void forcePunish(String check, String info) {
-        MX.bannedPerMinuteCount++;
-        this.ignoreExitBan = true;
-        this.vl = 0;
-        Bukkit.getScheduler().runTask(MX.getInstance(), () -> {
-            String banMsg = this.wrapString(ConfigCache.BAN_COMMAND
-                    .replace("%check%", check)
-                    .replace("%info%", info));
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), banMsg);
-            this.setBanAnimInfo(null);
-        });
+
     }
 
     public void debug(String msg) {
@@ -174,9 +160,7 @@ public final class PlayerProfile {
     }
 
     public int getEntityId() {
-        return ProtocolLib.isTemporary(this.getPlayer())
-                ? new Random().nextInt()
-                : this.getPlayer().getEntityId();
+        return this.getPlayer().getEntityId();
     }
 
     public int calculateSensitivity() {

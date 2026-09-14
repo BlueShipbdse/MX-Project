@@ -1,8 +1,11 @@
 package kireiko.dev.anticheat;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import kireiko.dev.anticheat.api.data.Metrics;
 import kireiko.dev.anticheat.api.data.PlayerContainer;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
@@ -10,20 +13,15 @@ import kireiko.dev.anticheat.commands.MXCommandHandler;
 import kireiko.dev.anticheat.core.AsyncScheduler;
 import kireiko.dev.anticheat.listeners.*;
 import kireiko.dev.anticheat.managers.CheckManager;
-import kireiko.dev.anticheat.services.AnimatedPunishService;
-import kireiko.dev.anticheat.services.FunThingsService;
 import kireiko.dev.anticheat.services.SimulationFlagService;
 import kireiko.dev.anticheat.utils.ConfigCache;
+import kireiko.dev.anticheat.utils.version.VersionUtil;
 import kireiko.dev.millennium.ml.ClientML;
 import kireiko.dev.millennium.types.EvictingList;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class MX extends JavaPlugin {
 
@@ -80,8 +78,6 @@ public class MX extends JavaPlugin {
     }
 
     private void punishTimer() {
-        AnimatedPunishService.init();
-        FunThingsService.init();
         SimulationFlagService.init();
         //CrasherShieldNewListener.watchdog();
 
@@ -100,23 +96,26 @@ public class MX extends JavaPlugin {
     }
 
     private void loadListeners() {
-        //Bukkit.getPluginManager().registerEvents(new GhostBlockTest(), this);
-        Bukkit.getPluginManager().registerEvents(new InteractSpellListener(), this);
         Bukkit.getPluginManager().registerEvents(new JoinQuitListener(), this);
-        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+        var eventManager = PacketEvents.getAPI().getEventManager();
         EntityTrackerListener.register();
-        protocolManager.addPacketListener(new RawMovementListener());
-        protocolManager.addPacketListener(new UseEntityListener());
-        protocolManager.addPacketListener(new LatencyHandler());
-        protocolManager.addPacketListener(new VelocityListener());
-        protocolManager.addPacketListener(new EntityActionListener());
-        protocolManager.addPacketListener(new VehicleTeleportListener());
+        eventManager.registerListener(new RawMovementListener());
+        eventManager.registerListener(new EntityActionListener());
+        eventManager.registerListener(new EntityAttackListener());
+        eventManager.registerListener(new LatencyHandler());
+        eventManager.registerListener(new VelocityListener());
+        eventManager.registerListener(new VehicleTeleportListener());
+        eventManager.registerListener(new InventoryListener());
         { // omni listener
-            final Set<PacketType> listeners = new HashSet<>();
-            for (PacketType packetType : PacketType.Play.Client.getInstance()) {
-                if (packetType.isSupported()) listeners.add(packetType);
+            var version = VersionUtil.getVersion().toClientVersion();
+            final Set<PacketTypeCommon> listeners = new HashSet<>();
+            for (PacketTypeCommon packetType : PacketType.Play.Client.values()) {
+                if (packetType.getId(version) > 0) {
+                    listeners.add(packetType);
+                }
             }
-            protocolManager.addPacketListener(new OmniPacketListener(listeners));
+
+            eventManager.registerListener(new OmniPacketListener(listeners));
         }
     }
 

@@ -12,8 +12,6 @@ banCommand: "ban %player% 1d Unfair advantage"
 # "NONE" - disable bypass
 bypass: "mx.bypass"
 bcMsg: "&c&l[MX]&f %message%"
-punishEffect: false
-interactSpell: true
 
 # Some checks also apply measures,
 # such as a ban on dealing damage to others for a few seconds.
@@ -21,7 +19,7 @@ interactSpell: true
 # CAREFUL (2) - rough hit blocking (full hit block)
 # LENIENT (1) - a detected cheater can still deal hits, but their outgoing damage will be very small
 # SILENT (0) - all measures fully disabled
-prevention: 2
+prevention: 1
 
 # will remove false positives from the cinematic camera,
 # but it will severely weaken the checks!
@@ -37,4 +35,4 @@ logInFiles: true
 rotationsContainer: true
 
 # Does not allow players to climb walls using ghost blocks
-preventGhostBlockAbuse: false
+preventGhostBlockAbuse: true

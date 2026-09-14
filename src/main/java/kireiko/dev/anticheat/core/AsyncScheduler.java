@@ -1,14 +1,13 @@
 package kireiko.dev.anticheat.core;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import java.lang.reflect.Field;
+import java.util.concurrent.*;
+import java.util.function.Function;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.java.Log;
-
-import java.lang.reflect.Field;
-import java.util.concurrent.*;
-import java.util.function.Function;
 
 @Log
 public final class AsyncScheduler {
@@ -16,8 +15,8 @@ public final class AsyncScheduler {
     private static final char INNER_CLASS_SEPARATOR_CHAR = '$';
     public static int STOP_WATCH_TIME_MILLIS = 1500;
     @Getter
-    private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(30,
-            new ThreadFactoryBuilder().setNameFormat("MX Thread %d").build());
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(30,
+                                                                                               new ThreadFactoryBuilder().setNameFormat("MX Thread %d").build());
 
     private AsyncScheduler() {
 

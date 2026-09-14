@@ -1,16 +1,15 @@
 package kireiko.dev.anticheat.checks.protocol;
 
-import kireiko.dev.anticheat.api.PacketCheckHandler;
-import kireiko.dev.anticheat.api.data.ConfigLabel;
-import kireiko.dev.anticheat.api.events.EntityActionEvent;
-import kireiko.dev.anticheat.api.events.UseEntityEvent;
-import kireiko.dev.anticheat.api.player.PlayerProfile;
-import kireiko.dev.anticheat.listeners.EntityActionListener;
-import kireiko.dev.anticheat.managers.CheckManager;
-import org.bukkit.entity.Player;
-
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEntityAction;
 import java.util.Map;
 import java.util.TreeMap;
+import kireiko.dev.anticheat.api.PacketCheckHandler;
+import kireiko.dev.anticheat.api.data.ConfigLabel;
+import kireiko.dev.anticheat.api.events.AttackEntityEvent;
+import kireiko.dev.anticheat.api.events.EntityActionEvent;
+import kireiko.dev.anticheat.api.player.PlayerProfile;
+import kireiko.dev.anticheat.managers.CheckManager;
+import org.bukkit.entity.Player;
 
 public class SprintCheck implements PacketCheckHandler {
     private final PlayerProfile profile;
@@ -46,13 +45,10 @@ public class SprintCheck implements PacketCheckHandler {
 
     @Override
     public void event(Object o) {
-        if (o instanceof EntityActionEvent) {
-            EntityActionEvent event = (EntityActionEvent) o;
-            if (event.getAbilitiesEnum() == null) return;
-            if (event.getAbilitiesEnum()
-                            .equals(EntityActionListener.AbilitiesEnum.START_SPRINTING)
-                            || event.getAbilitiesEnum().equals(EntityActionListener
-                            .AbilitiesEnum.STOP_SPRINTING)) {
+        if (o instanceof EntityActionEvent event) {
+            if (event.getAction()
+                            .equals(WrapperPlayClientEntityAction.Action.START_SPRINTING)
+                            || event.getAction() == WrapperPlayClientEntityAction.Action.STOP_SPRINTING) {
                 final long dev = System.currentTimeMillis() - this.lastAction;
                 this.lastAction = System.currentTimeMillis();
                 if (activeTo < System.currentTimeMillis()) return;
@@ -74,8 +70,7 @@ public class SprintCheck implements PacketCheckHandler {
                 }
             }
             //profile.getPlayer().sendMessage("action " + dev);
-        } else if (o instanceof UseEntityEvent) {
-            UseEntityEvent e = (UseEntityEvent) o;
+        } else if (o instanceof AttackEntityEvent e) {
             if (e.isAttack() && e.getTarget() instanceof Player) {
                 this.activeTo = System.currentTimeMillis() + 3500;
                 if (this.zeros > 0) this.zeros -= 2;

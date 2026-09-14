@@ -1,30 +1,26 @@
 package kireiko.dev.anticheat.listeners;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerOptions;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import kireiko.dev.anticheat.MX;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.event.PacketReceiveEvent;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import java.util.List;
 import kireiko.dev.anticheat.api.data.PlayerContainer;
 import kireiko.dev.anticheat.api.events.WindowClickEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 
-import java.util.Collections;
+import org.jetbrains.annotations.NotNull;
 
-public final class InventoryListener extends PacketAdapter {
+public final class InventoryListener extends PacketListener {
 
     public InventoryListener() {
         super(
-                MX.getInstance(),
-                ListenerPriority.HIGHEST,
-                Collections.singletonList(PacketType.Play.Client.WINDOW_CLICK),
-                ListenerOptions.ASYNC
+                PacketListenerPriority.HIGHEST,
+                List.of(PacketType.Play.Client.CLICK_WINDOW_BUTTON, PacketType.Play.Client.CLICK_WINDOW)
         );
     }
 
     @Override
-    public void onPacketReceiving(PacketEvent event) {
+    public void onPacketReceiving(@NotNull PacketReceiveEvent event) {
         PlayerProfile protocol = PlayerContainer.getProfile(event.getPlayer());
         if (protocol == null) {
             return;

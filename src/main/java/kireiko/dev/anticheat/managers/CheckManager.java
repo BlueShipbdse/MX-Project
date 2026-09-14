@@ -1,5 +1,8 @@
 package kireiko.dev.anticheat.managers;
 
+import java.io.File;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import kireiko.dev.anticheat.MX;
 import kireiko.dev.anticheat.api.PacketCheckHandler;
 import kireiko.dev.anticheat.api.data.ConfigLabel;
@@ -21,14 +24,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 @UtilityClass
 public class CheckManager {
     @Getter
-    private Set<Class<? extends PacketCheckHandler>> checks = new HashSet<>();
+    private final Set<Class<? extends PacketCheckHandler>> checks = new HashSet<>();
     @Getter
     private final Map<String, PacketCheckHandler> instances = new ConcurrentHashMap<>();
 
@@ -62,8 +61,8 @@ public class CheckManager {
                             .newInstance((Object) null);
             ConfigLabel defaultLabel = check.config();
 
-            String sectionName = defaultLabel.getName();
-            Map<String, Object> defaultParams = defaultLabel.getParameters();
+            String sectionName = defaultLabel.name();
+            Map<String, Object> defaultParams = defaultLabel.parameters();
 
             ConfigurationSection section = cfg.getConfigurationSection(sectionName);
             if (section == null) {

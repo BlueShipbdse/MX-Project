@@ -6,7 +6,7 @@ import org.bukkit.entity.Entity;
 
 @Data
 @AllArgsConstructor
-public final class UseEntityEvent {
+public final class AttackEntityEvent {
     private Entity target;
     private boolean attack;
     private int entityId;

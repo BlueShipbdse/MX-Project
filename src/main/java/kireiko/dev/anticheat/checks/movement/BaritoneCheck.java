@@ -1,11 +1,11 @@
 package kireiko.dev.anticheat.checks.movement;
 
+import java.util.*;
 import kireiko.dev.anticheat.api.PacketCheckHandler;
 import kireiko.dev.anticheat.api.data.ConfigLabel;
 import kireiko.dev.anticheat.api.events.RotationEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.managers.CheckManager;
-import kireiko.dev.millennium.math.Euler;
 import kireiko.dev.millennium.math.Simplification;
 import kireiko.dev.millennium.math.Statistics;
 import kireiko.dev.millennium.types.EvictingList;
@@ -13,8 +13,6 @@ import kireiko.dev.millennium.vectors.Vec2;
 import kireiko.dev.millennium.vectors.Vec2f;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.*;
 
 public class BaritoneCheck implements PacketCheckHandler {
 
@@ -54,12 +52,11 @@ public class BaritoneCheck implements PacketCheckHandler {
     }
     @Override
     public void event(Object o) {
-       if (o instanceof RotationEvent) {
+       if (o instanceof RotationEvent event) {
            if (profile.isIgnoreFirstTick()) return;
            if (profile.getPlayer().getVehicle() != null) {
                return;
            }
-           RotationEvent event = (RotationEvent) o;
            Vec2f delta = event.getDelta();
            if (Math.abs(delta.getY()) < 10 && Math.abs(profile.getTo().getPitch()) < 89.9f) {
                stack.add(delta);

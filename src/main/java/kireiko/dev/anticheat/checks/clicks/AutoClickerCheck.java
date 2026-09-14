@@ -1,22 +1,23 @@
 package kireiko.dev.anticheat.checks.clicks;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketEvent;
+
+import com.github.retrooper.packetevents.event.ProtocolPacketEvent;
+import com.github.retrooper.packetevents.manager.server.ServerVersion;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import kireiko.dev.anticheat.api.PacketCheckHandler;
 import kireiko.dev.anticheat.api.data.ConfigLabel;
-import kireiko.dev.anticheat.api.events.*;
+import kireiko.dev.anticheat.api.events.CPacketEvent;
+import kireiko.dev.anticheat.api.events.MoveEvent;
+import kireiko.dev.anticheat.api.events.NoRotationEvent;
+import kireiko.dev.anticheat.api.events.RotationEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.managers.CheckManager;
-import kireiko.dev.anticheat.services.SimulationFlagService;
-import kireiko.dev.anticheat.utils.ConfigCache;
-import kireiko.dev.millennium.math.Simplification;
+import kireiko.dev.anticheat.utils.version.VersionUtil;
 import kireiko.dev.millennium.math.Statistics;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.util.Vector;
-
-import java.util.*;
-import java.util.regex.Pattern;
 
 public final class AutoClickerCheck implements PacketCheckHandler {
     private final PlayerProfile profile;
@@ -54,14 +55,16 @@ public final class AutoClickerCheck implements PacketCheckHandler {
     public void event(Object o) {
         if (!(boolean) localCfg.get("enabled")) return;
         if (o instanceof CPacketEvent) {
-            PacketEvent event = ((CPacketEvent) o).getPacketEvent();
-            PacketType type = event.getPacket().getType();
-            if (type.equals(PacketType.Play.Client.BLOCK_DIG)) {
+            ProtocolPacketEvent event = ((CPacketEvent) o).getPacketEvent();
+            var type = event.getPacketType();
+            if (type == PacketType.Play.Client.PLAYER_DIGGING) {
                 enabled = false;
-            } else if (type.equals(PacketType.Play.Client.USE_ENTITY)) {
+            } else if (type == (VersionUtil.getVersion().isNewerThanOrEquals(ServerVersion.V_26_1)
+                       ? PacketType.Play.Client.ATTACK
+                       : PacketType.Play.Client.INTERACT_ENTITY)) {
                 lastAttack = System.currentTimeMillis();
                 enabled = true;
-            } else if (type.equals(PacketType.Play.Client.ARM_ANIMATION)) {
+            } else if (type == PacketType.Play.Client.ANIMATION) {
                 long delay = (System.currentTimeMillis() - oldTime) / 50;
                 if (delay < 25
                      && enabled

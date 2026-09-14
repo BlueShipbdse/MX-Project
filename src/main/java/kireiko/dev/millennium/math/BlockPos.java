@@ -1,10 +1,9 @@
 package kireiko.dev.millennium.math;
 
 import com.google.common.collect.AbstractIterator;
+import java.util.Iterator;
 import kireiko.dev.millennium.vectors.Vec3;
 import kireiko.dev.millennium.vectors.Vec3i;
-
-import java.util.Iterator;
 
 public class BlockPos extends Vec3i {
 
@@ -62,7 +61,7 @@ public class BlockPos extends Vec3i {
                     private BlockPos lastReturned = null;
 
                     // private static final String __OBFID = "CL_00002332";
-                    protected BlockPos computeNext0() {
+                    private BlockPos computeNext0() {
                         if (this.lastReturned == null) {
                             this.lastReturned = var2;
                             return this.lastReturned;
@@ -114,7 +113,7 @@ public class BlockPos extends Vec3i {
                     private MutableBlockPos theBlockPos = null;
 
                     // private static final String __OBFID = "CL_00002330";
-                    protected MutableBlockPos computeNext0() {
+                    private MutableBlockPos computeNext0() {
                         if (this.theBlockPos == null) {
                             this.theBlockPos = new MutableBlockPos(var2.getX(), var2.getY(), var2.getZ(), null);
                             return this.theBlockPos;

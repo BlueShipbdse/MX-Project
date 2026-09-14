@@ -1,9 +1,12 @@
 package kireiko.dev.anticheat.checks.aim.ml;
 
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import kireiko.dev.anticheat.api.PacketCheckHandler;
 import kireiko.dev.anticheat.api.data.ConfigLabel;
+import kireiko.dev.anticheat.api.events.AttackEntityEvent;
 import kireiko.dev.anticheat.api.events.RotationEvent;
-import kireiko.dev.anticheat.api.events.UseEntityEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.core.AsyncScheduler;
 import kireiko.dev.anticheat.managers.CheckManager;
@@ -16,10 +19,6 @@ import kireiko.dev.millennium.ml.data.module.FlagType;
 import kireiko.dev.millennium.ml.data.module.ModuleML;
 import kireiko.dev.millennium.ml.data.module.ModuleResultML;
 import kireiko.dev.millennium.vectors.Vec2f;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class AimMLCheck implements PacketCheckHandler {
 
@@ -62,10 +61,9 @@ public final class AimMLCheck implements PacketCheckHandler {
 
     @Override
     public void event(Object o) {
-        if (o instanceof RotationEvent) {
+        if (o instanceof RotationEvent event) {
             if (profile.isCinematic()) return;
             if (!((boolean) getConfig().get("enabled"))) return;
-            RotationEvent event = (RotationEvent) o;
 
             if (System.currentTimeMillis() > this.lastAttack + 3000) {
                 if (!this.rawRotations.isEmpty() && !RECORDING.containsKey(profile.getPlayer().getUniqueId())) {
@@ -92,8 +90,7 @@ public final class AimMLCheck implements PacketCheckHandler {
             if (this.rawRotations.size() >= 600) {
                 this.checkLegacy();
             }
-        } else if (o instanceof UseEntityEvent) {
-            UseEntityEvent event = (UseEntityEvent) o;
+        } else if (o instanceof AttackEntityEvent event) {
             if (event.isAttack()) {
                 this.lastAttack = System.currentTimeMillis();
             }

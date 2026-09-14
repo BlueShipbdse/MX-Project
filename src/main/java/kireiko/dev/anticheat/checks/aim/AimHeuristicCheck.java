@@ -1,17 +1,16 @@
 package kireiko.dev.anticheat.checks.aim;
 
+import java.util.*;
 import kireiko.dev.anticheat.api.PacketCheckHandler;
 import kireiko.dev.anticheat.api.data.ConfigLabel;
+import kireiko.dev.anticheat.api.events.AttackEntityEvent;
 import kireiko.dev.anticheat.api.events.NoRotationEvent;
 import kireiko.dev.anticheat.api.events.RotationEvent;
-import kireiko.dev.anticheat.api.events.UseEntityEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.checks.aim.heuristic.*;
 import kireiko.dev.anticheat.managers.CheckManager;
 import kireiko.dev.millennium.vectors.Vec2f;
 import lombok.Getter;
-
-import java.util.*;
 
 public final class AimHeuristicCheck implements PacketCheckHandler {
 
@@ -26,7 +25,7 @@ public final class AimHeuristicCheck implements PacketCheckHandler {
     public ConfigLabel config() {
         for (final HeuristicComponent component : components) {
             ConfigLabel label = component.config();
-            localCfg.put(label.getName(), label.getParameters());
+            localCfg.put(label.name(), label.parameters());
         }
         return new ConfigLabel("aim_heuristic", localCfg);
     }
@@ -36,7 +35,7 @@ public final class AimHeuristicCheck implements PacketCheckHandler {
         this.localCfg = params;
         for (HeuristicComponent comp : components) {
             ConfigLabel label    = comp.config();
-            String section       = label.getName();
+            String section       = label.name();
             Map<String, Object> defaults = defaultConfigs.getOrDefault(section,
                             Collections.emptyMap());
             Object rawSection = params.get(section);
@@ -70,8 +69,8 @@ public final class AimHeuristicCheck implements PacketCheckHandler {
         for (HeuristicComponent comp : components) {
             ConfigLabel lbl = comp.config();
             defaultConfigs.put(
-                            lbl.getName(),
-                            new HashMap<>(lbl.getParameters())
+                            lbl.name(),
+                            new HashMap<>(lbl.parameters())
             );
         }
         if (CheckManager.classCheck(this.getClass())) {
@@ -81,15 +80,13 @@ public final class AimHeuristicCheck implements PacketCheckHandler {
 
     @Override
     public void event(Object o) {
-        if (o instanceof RotationEvent) {
-            RotationEvent event = (RotationEvent) o;
+        if (o instanceof RotationEvent event) {
             if (System.currentTimeMillis() > this.lastAttack + 3500 || profile.isIgnoreFirstTick()) return;
             for (HeuristicComponent component : components) component.process(event);
         } else if (o instanceof NoRotationEvent) {
             if (System.currentTimeMillis() > this.lastAttack + 3500 || profile.isIgnoreFirstTick()) return;
             for (HeuristicComponent component : components) component.process(new RotationEvent(profile, new Vec2f(0, 0), new Vec2f(0, 0)));
-        } else if (o instanceof UseEntityEvent) {
-            UseEntityEvent event = (UseEntityEvent) o;
+        } else if (o instanceof AttackEntityEvent event) {
             if (event.isAttack()) {
                 this.lastAttack = System.currentTimeMillis();
             }

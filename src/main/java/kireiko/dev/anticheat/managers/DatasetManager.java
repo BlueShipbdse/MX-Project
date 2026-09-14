@@ -1,13 +1,12 @@
 package kireiko.dev.anticheat.managers;
 
-import kireiko.dev.anticheat.MX;
-import kireiko.dev.millennium.ml.data.ObjectML;
-import kireiko.dev.millennium.vectors.Pair;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import kireiko.dev.anticheat.MX;
+import kireiko.dev.millennium.ml.data.ObjectML;
+import kireiko.dev.millennium.vectors.Pair;
 
 public class DatasetManager {
 
@@ -21,7 +20,7 @@ public class DatasetManager {
 
     public static void saveSample(List<ObjectML> data, boolean isCheater) {
         String prefix = isCheater ? "cheat_" : "legit_";
-        File file = new File(FOLDER, prefix + UUID.randomUUID().toString() + ".dat");
+        File file = new File(FOLDER, prefix + UUID.randomUUID() + ".dat");
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
             oos.writeObject(data);
         } catch (Exception ignored) {

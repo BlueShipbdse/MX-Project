@@ -1,20 +1,17 @@
 package kireiko.dev.anticheat.checks.aim.heuristic;
 
+import java.util.*;
 import kireiko.dev.anticheat.api.data.ConfigLabel;
 import kireiko.dev.anticheat.api.events.RotationEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.checks.aim.AimHeuristicCheck;
 import kireiko.dev.millennium.math.Euler;
 import kireiko.dev.millennium.math.Statistics;
-import kireiko.dev.millennium.ml.data.reasoning.MathML;
 import kireiko.dev.millennium.vectors.Vec2f;
-
-import java.util.*;
-import java.util.function.Function;
 
 public final class AimSmoothCheck implements HeuristicComponent {
     private final AimHeuristicCheck check;
-    private int buffer = 0;
+    private final int buffer = 0;
     private Map<String, Object> localCfg = new TreeMap<>();
     private final List<Double> stack = new ArrayList<>();
     public AimSmoothCheck(final AimHeuristicCheck check) {

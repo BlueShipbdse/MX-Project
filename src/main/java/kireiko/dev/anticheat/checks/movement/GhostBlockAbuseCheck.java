@@ -1,5 +1,7 @@
 package kireiko.dev.anticheat.checks.movement;
 
+import java.util.Map;
+import java.util.TreeMap;
 import kireiko.dev.anticheat.MX;
 import kireiko.dev.anticheat.api.PacketCheckHandler;
 import kireiko.dev.anticheat.api.data.ConfigLabel;
@@ -12,9 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-
-import java.util.Map;
-import java.util.TreeMap;
 
 public class GhostBlockAbuseCheck implements PacketCheckHandler {
     private final PlayerProfile profile;
@@ -47,9 +46,8 @@ public class GhostBlockAbuseCheck implements PacketCheckHandler {
 
     @Override
     public void event(Object o) {
-        if (o instanceof MoveEvent) {
+        if (o instanceof MoveEvent event) {
             if (!ConfigCache.PREVENT_GHOST_BLOCK_ABUSE || profile.isIgnoreFirstTick()) return;
-            MoveEvent event = (MoveEvent) o;
             final Location to = event.getTo();
             final Location from = event.getFrom();
             final int buffer = ((Number) localCfg.get("buffer")).intValue();

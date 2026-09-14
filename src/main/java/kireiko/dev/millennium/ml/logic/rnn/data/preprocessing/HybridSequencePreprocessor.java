@@ -33,7 +33,7 @@ public final class HybridSequencePreprocessor implements SequencePreprocessor {
             double[][] window = new double[winLen][2];
             System.arraycopy(rawVecs, start, window, 0, winLen);
 
-            double[] s = stat.prepare(window).x[0];
+            double[] s = stat.prepare(window).x()[0];
             double[] r = rawFeatures(window);
             x[used++] = combine(s, r);
         }

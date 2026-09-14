@@ -1,11 +1,7 @@
 package kireiko.dev.anticheat.utils;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.bukkit.ChatColor;
-
 import java.util.List;
+import org.bukkit.ChatColor;
 
 public final class GraphUtil {
 
@@ -43,11 +39,6 @@ public final class GraphUtil {
         return new GraphResult(graph.toString(), positives, negatives);
     }
 
-    @Getter
-    @Setter
-    @RequiredArgsConstructor
-    public static class GraphResult {
-        private final String graph;
-        private final int positives, negatives;
+    public record GraphResult(String graph, int positives, int negatives) {
     }
 }

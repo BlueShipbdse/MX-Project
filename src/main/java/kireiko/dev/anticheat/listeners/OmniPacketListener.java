@@ -1,30 +1,25 @@
 package kireiko.dev.anticheat.listeners;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerOptions;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import kireiko.dev.anticheat.MX;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.event.PacketReceiveEvent;
+import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
+import java.util.Set;
 import kireiko.dev.anticheat.api.data.PlayerContainer;
 import kireiko.dev.anticheat.api.events.CPacketEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
+import org.jspecify.annotations.NonNull;
 
-import java.util.Set;
+public final class OmniPacketListener extends PacketListener {
 
-public final class OmniPacketListener extends PacketAdapter {
-
-    public OmniPacketListener(Set<PacketType> list) {
+    public OmniPacketListener(Set<PacketTypeCommon> list) {
         super(
-                MX.getInstance(),
-                ListenerPriority.HIGHEST,
-                list,
-                ListenerOptions.ASYNC
+                PacketListenerPriority.HIGHEST,
+                list
         );
     }
 
     @Override
-    public void onPacketReceiving(PacketEvent event) {
+    public void onPacketReceiving(@NonNull PacketReceiveEvent event) {
         PlayerProfile protocol = PlayerContainer.getProfile(event.getPlayer());
         if (protocol == null) {
             return;

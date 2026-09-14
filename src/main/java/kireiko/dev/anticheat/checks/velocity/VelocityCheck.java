@@ -1,5 +1,8 @@
 package kireiko.dev.anticheat.checks.velocity;
 
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.regex.Pattern;
 import kireiko.dev.anticheat.api.PacketCheckHandler;
 import kireiko.dev.anticheat.api.data.ConfigLabel;
 import kireiko.dev.anticheat.api.events.CTransactionEvent;
@@ -8,15 +11,10 @@ import kireiko.dev.anticheat.api.events.SVelocityEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.managers.CheckManager;
 import kireiko.dev.anticheat.services.SimulationFlagService;
-import kireiko.dev.anticheat.utils.ConfigCache;
 import kireiko.dev.millennium.math.Simplification;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.util.Vector;
-
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.regex.Pattern;
 
 public final class VelocityCheck implements PacketCheckHandler {
     private static final Pattern pattern = Pattern.compile("(?i)(.*(snow|step|frame|table|water|lava|web|slab|stair|ladder|vine|waterlily|wall|carpet|fence|rod|bed|skull|pot|hopper|door|bars|piston|lily).*)");
@@ -70,14 +68,12 @@ public final class VelocityCheck implements PacketCheckHandler {
     @Override
     public void event(Object o) {
         if (!(boolean) localCfg.get("enabled")) return;
-        if (o instanceof SVelocityEvent) {
-            SVelocityEvent event = (SVelocityEvent) o;
+        if (o instanceof SVelocityEvent event) {
             this.totalVlAtY = 25;
             this.from = profile.getTo().clone();
             this.applyVelocity(event);
             //profile.getPlayer().sendMessage("v; " + event.getVelocity());
-        } else if (o instanceof MoveEvent) {
-            MoveEvent event = (MoveEvent) o;
+        } else if (o instanceof MoveEvent event) {
             checkVelocity(event);
             this.isOnGroundFrom = profile.isGround();
         } else if (o instanceof CTransactionEvent) {
@@ -88,8 +84,8 @@ public final class VelocityCheck implements PacketCheckHandler {
     private void applyVelocity(SVelocityEvent event) {
         transactionLock = true;
         Location[] locationsToCheck = {
-                this.profile.getTo().clone().add(event.getVelocity()),
-                this.profile.getTo().clone().add(event.getVelocity()).add(0, 1, 0)
+                this.profile.getTo().clone().add(event.velocity()),
+                this.profile.getTo().clone().add(event.velocity()).add(0, 1, 0)
         };
         boolean allClear = true;
         for (Location loc : locationsToCheck) {
@@ -99,7 +95,7 @@ public final class VelocityCheck implements PacketCheckHandler {
             }
         }
         if (allClear) {
-            this.velocity = event.getVelocity();
+            this.velocity = event.velocity();
             this.mostCloseYMotion = 1.0;
             this.timing = 0;
         }
