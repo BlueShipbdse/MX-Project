@@ -1,5 +1,9 @@
 package kireiko.dev.anticheat.utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import kireiko.dev.anticheat.api.data.PlayerContainer;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.utils.version.VersionUtil;
@@ -7,29 +11,26 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public final class MessageUtils {
 
     private static final Pattern HEX_PATTERN =
                     Pattern.compile("(?i)&#([A-F0-9]{6})");
 
     public static void sendMessagesToPlayers(String permission, String message) {
+        Bukkit.getConsoleSender().sendMessage(message);
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerProfile profile = PlayerContainer.getProfile(player);
             if (profile == null || !profile.isAlerts()) {
                 continue;
             }
             if (player.hasPermission(permission)) {
-                player.sendMessage(wrapColors(message));
+                player.sendMessage(message);
             }
         }
     }
 
     public static void sendMessagesToPlayersNative(String permission, String permission2, String message) {
+        Bukkit.getConsoleSender().sendMessage(message);
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission(permission) || player.hasPermission(permission2)) {
                 player.sendMessage(wrapColors(message));

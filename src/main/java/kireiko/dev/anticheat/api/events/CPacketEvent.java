@@ -1,12 +1,12 @@
 package kireiko.dev.anticheat.api.events;
 
 
-import com.github.retrooper.packetevents.event.ProtocolPacketEvent;
+import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public final class CPacketEvent {
-    private ProtocolPacketEvent packetEvent;
+    private PacketReceiveEvent packetEvent;
 }

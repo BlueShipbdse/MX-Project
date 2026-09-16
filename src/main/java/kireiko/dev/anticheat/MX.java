@@ -97,6 +97,7 @@ public class MX extends JavaPlugin {
 
     private void loadListeners() {
         Bukkit.getPluginManager().registerEvents(new JoinQuitListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BlockBreakListener(), this);
         var eventManager = PacketEvents.getAPI().getEventManager();
         EntityTrackerListener.register();
         eventManager.registerListener(new RawMovementListener());

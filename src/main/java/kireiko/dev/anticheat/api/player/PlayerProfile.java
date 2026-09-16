@@ -14,13 +14,17 @@ import kireiko.dev.anticheat.utils.MessageUtils;
 import kireiko.dev.millennium.math.Statistics;
 import kireiko.dev.millennium.types.EvictingList;
 import kireiko.dev.millennium.vectors.Pair;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 public final class PlayerProfile {
 
     private final Player player;
@@ -148,6 +152,11 @@ public final class PlayerProfile {
     public void debug(String msg) {
         if (debug)
             this.player.sendMessage(wrapString("&9&l[Debug] &f" + msg));
+    }
+
+    public void debug(String title, String msg) {
+        if (debug)
+            this.player.sendMessage(wrapString("&9&l[Debug] &7&4" + title + " &7" + msg));
     }
 
     public void setAttackBlockToTime(long time) {

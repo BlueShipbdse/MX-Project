@@ -25,7 +25,7 @@ public final class ConfigCache {
         VL_LIMIT = MX.getInstance().getConfig().getDouble("vlLimit", 100);
         VL_RESET = (float) MX.getInstance().getConfig().getDouble("vlReset", 15);
         PREVENTION = MX.getInstance().getConfig().getInt("prevention", 2);
-        ALERT_MSG = MX.getInstance().getConfig().getString("alertMsg", "&9&l[MX] &e%player% &8>>&c %check% &7(&c%component%&7) &8%info% &f[%vl%/%vlLimit%]");
+        ALERT_MSG = MX.getInstance().getConfig().getString("alertMsg", "&c&l[MX] &e%player% &8>>&c %check% &7(&c%component%&7) &8%info% &f[%vl%/%vlLimit%]");
         UNUSUAL = MX.getInstance().getConfig().getString("unusual", "&9&l[MX] &e%player% &8>>&6 Playing suspiciously");
         SUSPECTED = MX.getInstance().getConfig().getString("suspected", "&9&l[MX] &e%player% &8>>&4 Looks like a cheater!");
         BAN_COMMAND = MX.getInstance().getConfig().getString("banCommand", "ban %player% 1d Unfair advantage");

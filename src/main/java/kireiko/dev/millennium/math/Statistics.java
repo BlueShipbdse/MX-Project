@@ -1,11 +1,10 @@
 package kireiko.dev.millennium.math;
 
 import com.google.common.collect.Lists;
-import kireiko.dev.millennium.vectors.Pair;
-
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import kireiko.dev.millennium.vectors.Pair;
 
 public final class Statistics {
 
@@ -43,6 +42,16 @@ public final class Statistics {
         return min;
     }
 
+    public static double getMax(final Collection<? extends Number> collection) {
+        double max = -Double.MAX_VALUE;
+
+        for (final Number number : collection) {
+            max = Math.max(max, number.doubleValue());
+        }
+
+        return max;
+    }
+
     public static float getGCD(double s) {
         float f1 = (float) ((float) s * 0.6 + 0.2);
         return f1 * f1 * f1 * 8.0F;
@@ -50,16 +59,6 @@ public final class Statistics {
 
     public static float getGCDValue(double s) {
         return getGCD(s) * 0.15F;
-    }
-
-    public static double getMax(final Collection<? extends Number> collection) {
-        double max = Double.MIN_VALUE;
-
-        for (final Number number : collection) {
-            max = Math.max(max, number.doubleValue());
-        }
-
-        return max;
     }
 
     public static double getStandardDeviation(final Collection<? extends Number> data) {
