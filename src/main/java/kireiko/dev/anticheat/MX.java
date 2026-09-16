@@ -6,14 +6,12 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import kireiko.dev.anticheat.api.data.Metrics;
 import kireiko.dev.anticheat.api.data.PlayerContainer;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.commands.MXCommandHandler;
 import kireiko.dev.anticheat.core.AsyncScheduler;
 import kireiko.dev.anticheat.listeners.*;
 import kireiko.dev.anticheat.managers.CheckManager;
-import kireiko.dev.anticheat.services.SimulationFlagService;
 import kireiko.dev.anticheat.utils.ConfigCache;
 import kireiko.dev.anticheat.utils.version.VersionUtil;
 import kireiko.dev.millennium.ml.ClientML;
@@ -45,40 +43,26 @@ public class MX extends JavaPlugin {
         ConfigCache.loadConfig();
         kireiko.dev.anticheat.managers.DatasetManager.init();
 
-        getLogger().info("Loading listeners...");
         loadListeners();
-        getLogger().info("Booting timers...");
         punishTimer();
-        getLogger().info("Initializing commands...");
         PluginCommand pCommand = this.getCommand(command);
         if (pCommand != null) {
             MXCommandHandler handler = new MXCommandHandler();
             pCommand.setExecutor(handler);
             pCommand.setTabCompleter(handler);
         }
-        getLogger().info("Running metrics...");
-        final Metrics metrics = new Metrics(this, 25612);
-        metrics.addCustomChart(new Metrics.SingleLineChart("banned_players_count", () -> {
-            int banCount = 0;
-            for (int i : MX.bannedPerMinuteList) banCount += i;
-            return banCount;
-        }));
+//        final Metrics metrics = new Metrics(this, 25612);
+//        metrics.addCustomChart(new Metrics.SingleLineChart("banned_players_count", () -> {
+//            int banCount = 0;
+//            for (int i : MX.bannedPerMinuteList) banCount += i;
+//            return banCount;
+//        }));
         getLogger().info("Launching ML (Kireiko Millennium 5)...");
         ClientML.run();
-        getLogger().info("Launched!\n"
-                        + "        :::   :::       :::    :::\n" +
-                        "      :+:+: :+:+:      :+:    :+:\n" +
-                        "    +:+ +:+:+ +:+      +:+  +:+  \n" +
-                        "   +#+  +:+  +#+       +#++:+\n" +
-                        "  +#+       +#+      +#+  +#+\n" +
-                        " #+#       #+#     #+#    #+#\n" +
-                        "###       ###     ###    ###\n" +
-                        "\nCreated by pawsashatoy (Kireiko Oleksandr)\n"
-                        );
     }
 
     private void punishTimer() {
-        SimulationFlagService.init();
+        //SimulationFlagService.init();
         //CrasherShieldNewListener.watchdog();
 
         // reset vl

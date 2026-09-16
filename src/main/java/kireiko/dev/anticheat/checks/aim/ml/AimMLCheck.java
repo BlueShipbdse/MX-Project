@@ -77,10 +77,12 @@ public final class AimMLCheck implements PacketCheckHandler {
             this.rawRotations.add(delta);
             this.rnnRotations.add(delta);
 
-            if (TEST_MODE && !RECORDING.containsKey(profile.getPlayer().getUniqueId())) {
-                profile.getPlayer().sendActionBar("§aChecking: " + this.rawRotations.size() + "/600 | RNN: " + this.rnnRotations.size() + "/150");
-            } else if (RECORDING.containsKey(profile.getPlayer().getUniqueId())) {
-                profile.getPlayer().sendActionBar("§cRECORDING: " + this.rawRotations.size() + "/600");
+            if (profile.isDebug()) {
+                if (TEST_MODE && !RECORDING.containsKey(profile.getPlayer().getUniqueId())) {
+                    profile.getPlayer().sendActionBar("§aChecking: " + this.rawRotations.size() + "/600 | RNN: " + this.rnnRotations.size() + "/150");
+                } else if (RECORDING.containsKey(profile.getPlayer().getUniqueId())) {
+                    profile.getPlayer().sendActionBar("§cRECORDING: " + this.rawRotations.size() + "/600");
+                }
             }
 
             if (this.rnnRotations.size() >= 150) {
@@ -141,35 +143,36 @@ public final class AimMLCheck implements PacketCheckHandler {
         if (recordType != null) {
             AsyncScheduler.run(() -> {
                 DatasetManager.saveSample(objectMLStack, recordType);
-                profile.getPlayer().sendMessage("§a[ML] Saved sample! Total in dataset: " + DatasetManager.getCount());
-            });
-        } else {
-            AsyncScheduler.run(() -> {
-                ModuleResultML finalModuleResult = new ModuleResultML(0, FlagType.NORMAL, null);
-                final Set<String> modelsThatFlagged = new HashSet<>();
-
-                for (int i = 0; i < 7; i++) {
-                    final ResultML resultML = FactoryML.getModel(i).checkData(objectMLStack);
-                    ModuleML moduleML = ClientML.MODEL_LIST.get(i);
-                    final ModuleResultML moduleResultML = moduleML.getResult(resultML);
-
-                    if (moduleResultML.getType() != FlagType.NORMAL) {
-                        modelsThatFlagged.add(moduleML.getName());
-                    }
-
-                    if (finalModuleResult.getInfo() == null) {
-                        finalModuleResult = moduleResultML;
-                    } else {
-                        final int finalLevel = finalModuleResult.getType().getLevel();
-                        final int tempLevel = moduleResultML.getType().getLevel();
-                        if (finalLevel < tempLevel || (finalLevel == tempLevel && finalModuleResult.getPriority() < moduleResultML.getPriority())) {
-                            finalModuleResult = moduleResultML;
-                        }
-                    }
+                if (profile.isDebug()) {
+                    profile.getPlayer().sendMessage("§a[ML] Saved sample! Total in dataset: " + DatasetManager.getCount());
                 }
-                handleFlag(finalModuleResult, modelsThatFlagged);
             });
         }
+        AsyncScheduler.run(() -> {
+            ModuleResultML finalModuleResult = new ModuleResultML(0, FlagType.NORMAL, null);
+            final Set<String> modelsThatFlagged = new HashSet<>();
+
+            for (int i = 0; i < 7; i++) {
+                final ResultML resultML = FactoryML.getModel(i).checkData(objectMLStack);
+                ModuleML moduleML = ClientML.MODEL_LIST.get(i);
+                final ModuleResultML moduleResultML = moduleML.getResult(resultML);
+
+                if (moduleResultML.getType() != FlagType.NORMAL) {
+                    modelsThatFlagged.add(moduleML.getName());
+                }
+
+                if (finalModuleResult.getInfo() == null) {
+                    finalModuleResult = moduleResultML;
+                } else {
+                    final int finalLevel = finalModuleResult.getType().getLevel();
+                    final int tempLevel = moduleResultML.getType().getLevel();
+                    if (finalLevel < tempLevel || (finalLevel == tempLevel && finalModuleResult.getPriority() < moduleResultML.getPriority())) {
+                        finalModuleResult = moduleResultML;
+                    }
+                }
+            }
+            handleFlag(finalModuleResult, modelsThatFlagged);
+        });
 
         this.rawRotations.clear();
     }

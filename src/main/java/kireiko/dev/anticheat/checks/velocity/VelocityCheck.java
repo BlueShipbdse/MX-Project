@@ -10,7 +10,6 @@ import kireiko.dev.anticheat.api.events.MoveEvent;
 import kireiko.dev.anticheat.api.events.SVelocityEvent;
 import kireiko.dev.anticheat.api.player.PlayerProfile;
 import kireiko.dev.anticheat.managers.CheckManager;
-import kireiko.dev.anticheat.services.SimulationFlagService;
 import kireiko.dev.millennium.math.Simplification;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -183,7 +182,7 @@ public final class VelocityCheck implements PacketCheckHandler {
         float vlLimit = ((Number) localCfg.get("buffer")).floatValue() * 10f;
         if (this.vl > vlLimit) {
             this.profile.punish(check, component, info, m);
-            SimulationFlagService.getFlags().add(new SimulationFlagService.Flag(profile, from, velocity));
+            //SimulationFlagService.getFlags().add(new SimulationFlagService.Flag(profile, from, velocity));
             this.vl = vlLimit - 10;
         }
     }
