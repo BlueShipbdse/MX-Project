@@ -43,9 +43,9 @@ public final class AimMLCheck implements PacketCheckHandler {
     @Override
     public ConfigLabel config() {
         localCfg.put("enabled", true);
-        localCfg.put("unusual_vl", 10);
-        localCfg.put("strange_vl", 20);
-        localCfg.put("suspected_vl", 40);
+        localCfg.put("unusual_vl", 2);
+        localCfg.put("strange_vl", 5);
+        localCfg.put("suspected_vl", 10);
         return new ConfigLabel("aim_ml", localCfg);
     }
 
@@ -190,29 +190,27 @@ public final class AimMLCheck implements PacketCheckHandler {
         objectMLStack.add(yaw);
         objectMLStack.add(pitch);
 
-        if (!RECORDING.containsKey(profile.getPlayer().getUniqueId())) {
-            AsyncScheduler.run(() -> {
-                ModuleResultML finalModuleResult = new ModuleResultML(0, FlagType.NORMAL, null);
-                final Set<String> modelsThatFlagged = new HashSet<>();
+        AsyncScheduler.run(() -> {
+            ModuleResultML finalModuleResult = new ModuleResultML(0, FlagType.NORMAL, null);
+            final Set<String> modelsThatFlagged = new HashSet<>();
 
-                int rnnIndex = 7;
-                if (ClientML.MODEL_LIST.size() > rnnIndex) {
-                    final ResultML resultML = FactoryML.getModel(rnnIndex).checkData(objectMLStack);
-                    ModuleML moduleML = ClientML.MODEL_LIST.get(rnnIndex);
-                    final ModuleResultML moduleResultML = moduleML.getResult(resultML);
+            int rnnIndex = 7;
+            if (ClientML.MODEL_LIST.size() > rnnIndex) {
+                final ResultML resultML = FactoryML.getModel(rnnIndex).checkData(objectMLStack);
+                ModuleML moduleML = ClientML.MODEL_LIST.get(rnnIndex);
+                final ModuleResultML moduleResultML = moduleML.getResult(resultML);
 
-                    profile.debug("&dRNN Prob: " + moduleResultML.getInfo() + " (" + moduleResultML.getType() + ")");
+                profile.debug("&dRNN Prob: " + moduleResultML.getInfo() + " (" + moduleResultML.getType() + ")");
 
-                    if (moduleResultML.getType() != FlagType.NORMAL) {
-                        modelsThatFlagged.add(moduleML.getName());
-                    }
-
-                    finalModuleResult = moduleResultML;
+                if (moduleResultML.getType() != FlagType.NORMAL) {
+                    modelsThatFlagged.add(moduleML.getName());
                 }
 
-                handleFlag(finalModuleResult, modelsThatFlagged);
-            });
-        }
+                finalModuleResult = moduleResultML;
+            }
+
+            handleFlag(finalModuleResult, modelsThatFlagged);
+        });
 
         this.rnnRotations.clear();
     }

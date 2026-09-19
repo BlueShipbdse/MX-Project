@@ -58,11 +58,16 @@ public class BaritoneCheck implements PacketCheckHandler {
                return;
            }
            Vec2f delta = event.getDelta();
-           if (Math.abs(delta.getY()) < 10 && Math.abs(profile.getTo().getPitch()) < 89.9f) {
-               stack.add(delta);
-               if (stack.size() >= 50) {
-                   check();
+           float pitch = Math.abs(profile.getTo().getPitch());
+           if (pitch < 90f) {
+               if (Math.abs(delta.getY()) < 10) {
+                   stack.add(delta);
+                   if (stack.size() >= 50) {
+                       check();
+                   }
                }
+           } else if (pitch > 90f) {
+               // TODO illegal pitch, cannot be reached by normal server
            }
        }
     }

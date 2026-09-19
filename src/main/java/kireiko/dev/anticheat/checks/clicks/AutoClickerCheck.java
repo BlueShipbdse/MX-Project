@@ -240,15 +240,15 @@ public final class AutoClickerCheck implements PacketCheckHandler {
             }
             final float vl = ((Number) localCfg.get("addGlobalVl")).floatValue() / 10;
             double kurtosis = Statistics.getKurtosis(stack);
-            //profile.debug("&7Auto Clicker Kurtosis (" + kurtosis + ") => <stack>: " + kurtosis);
+            profile.debug("&7Auto Clicker Kurtosis (" + kurtosis + ") => <stack>: " + kurtosis);
             if (kurtosis < 0 || Double.isNaN(kurtosis)) {
                 profile.punish("AutoClicker", "Kurtosis", "Analysis <negative> [" + kurtosis + "]", vl);
             } else {
                 final List<Float> jiff = Statistics.getJiffDelta(shannonStack, 2);
                 double min = Statistics.getMin(jiff);
                 double max = Statistics.getMax(jiff);
-                //profile.debug("&7Auto Clicker Entropy: (" + min + ", " + max + ")" + ", Entropy: (" + jiff + ") => Initial Entropy Size: " + shannonStack.size() + ". Query? " + entropyQuery);
-                if (min < 0.1 && max < 0.2) {
+                profile.debug("&7Auto Clicker Entropy: (" + min + ", " + max + ")" + ", Entropy: (" + jiff + ") => Initial Entropy Size: " + shannonStack.size() + ". Query? " + entropyQuery);
+                if (min < 0.1 && max < 0.15) {
                     if (!entropyQuery) {
                         entropyQuery = true;
                     } else {

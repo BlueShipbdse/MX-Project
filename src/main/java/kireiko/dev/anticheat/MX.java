@@ -88,7 +88,7 @@ public class MX extends JavaPlugin {
         eventManager.registerListener(new EntityActionListener());
         eventManager.registerListener(new EntityAttackListener());
         eventManager.registerListener(new LatencyHandler());
-        eventManager.registerListener(new VelocityListener());
+        //eventManager.registerListener(new VelocityListener());
         eventManager.registerListener(new VehicleTeleportListener());
         eventManager.registerListener(new InventoryListener());
         { // omni listener
